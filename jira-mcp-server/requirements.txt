@@ -1,22 +1,33 @@
-# JIRA MCP Server Dependencies
+# Jira MCP Server Dependencies
 
 # Core MCP framework
-fastmcp>=2.0.0
+fastmcp==2.12.5
 
-# JIRA client
-jira>=3.5.0
+# Jira API client
+jira==3.5.2
+
+# HTTP client
+requests==2.31.0
 
 # Caching
-cachetools>=5.3.0
+cachetools==6.2.1
 
 # Configuration
-python-dotenv>=1.0.0
+python-dotenv==1.1.1
 
 # FastAPI Client Dependencies
-fastapi>=0.104.0
-uvicorn[standard]>=0.24.0
-httpx>=0.25.0
-pydantic>=2.0.0
+fastapi==0.119.0
+uvicorn[standard]==0.37.0
+httpx==0.28.1
+pydantic==2.12.3
 
 # LLM Integration
-google-generativeai>=0.3.0
+# nail-client>=1.0.0
+google-genai==1.45.0
+
+# Date/time handling
+python-dateutil==2.8.2
+
+# Optional: Additional Jira integrations
+# atlassian-python-api>=3.41.0  # Alternative Jira client
+# jira-python>=1.0.10           # Another Jira client option

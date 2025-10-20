@@ -21,6 +21,7 @@ This MCP server provides:
 - **FastAPI**: Web framework for the REST API client
 - **CacheTools**: In-memory caching for query results
 - **Python-dotenv**: Environment variable management
+- **Gemini LLM Wrapper**: Custom wrapper for Google Gemini models with NailLLMLangchain compatibility
 
 ## 🚀 Quick Start
 
@@ -50,7 +51,7 @@ pip install -r requirements.txt
 ### 4. Run Server
 
 ```bash
-python mcp_server.py
+python server.py
 ```
 
 ### 5. Run Client (Optional)
@@ -58,7 +59,7 @@ python mcp_server.py
 ```bash
 # In a new terminal
 export MCP_SERVER_URL=http://127.0.0.1:8000/mcp
-uvicorn mcp_client:app --host 0.0.0.0 --port 8001
+uvicorn client:app --host 0.0.0.0 --port 8001
 ```
 
 ### 6. Test the Setup
@@ -74,6 +75,10 @@ curl http://127.0.0.1:8001/health
 curl -X POST http://127.0.0.1:8001/ask_llm \
   -H "Content-Type: application/json" \
   -d '{"question": "Show me the top 5 users by registration date"}'
+
+# Run comprehensive tests
+chmod +x test_curl_commands.sh
+./test_curl_commands.sh
 ```
 
 ## 📊 Supported Databases
@@ -180,7 +185,28 @@ python test_database.py
 
 # Test MCP client
 python test_client.py
+
+# Run comprehensive API tests
+chmod +x test_curl_commands.sh
+./test_curl_commands.sh
 ```
+
+### Test Scripts
+
+The template includes comprehensive test scripts:
+
+- **`test_curl_commands.sh`** - Complete test suite for all API endpoints
+- **`test_database.py`** - Database connection and basic functionality tests
+- **`test_client.py`** - MCP client integration tests
+
+The test script covers:
+- Database structure queries
+- Complex aggregations and joins
+- Non-database query handling
+- Security (SQL injection, dangerous operations)
+- Edge cases (empty queries, large result sets)
+- Health checks
+- Direct API endpoints
 
 ### Example Queries
 
@@ -279,7 +305,7 @@ Enable debug logging:
 
 ```bash
 export LOG_LEVEL=DEBUG
-python mcp_server.py
+python server.py
 ```
 
 ### Health Check
@@ -327,6 +353,39 @@ server = DatabaseMCPServer(config)
 await server.start()
 ```
 
+### Gemini LLM Wrapper
+
+The template includes a custom Gemini LLM wrapper that provides NailLLMLangchain compatibility:
+
+```python
+from gemini_llm_wrapper import GeminiLLMWrapper
+
+# Initialize with environment variable
+llm = GeminiLLMWrapper(
+    model_id="gemini-2.0-flash-exp",
+    temperature=0.2,
+    max_tokens=600
+)
+
+# Use like NailLLMLangchain
+response = llm.invoke("Your prompt here")
+
+# Chat interface
+messages = [
+    {"role": "system", "content": "You are a helpful assistant"},
+    {"role": "user", "content": "Hello!"}
+]
+response = llm.chat(messages)
+```
+
+### Environment Configuration
+
+The template includes multiple environment configuration options:
+
+- **`env.example`** - Template with all available options
+- **`env.template`** - Basic template for quick setup
+- **`mcp.env`** - Complete configuration with all features enabled
+
 ### Multiple Databases
 
 ```python
@@ -354,7 +413,7 @@ class MultiDatabaseServer:
 
 ### MCP Server Implementation
 
-The MCP server (`mcp_server.py`) implements:
+The MCP server (`server.py`) implements:
 
 1. **Database Connection Management**:
    - Supports MySQL, PostgreSQL, and SQLite

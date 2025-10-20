@@ -21,8 +21,7 @@ Usage:
 import os
 import logging
 from typing import Optional, Dict, Any, List
-import google.generativeai as genai
-from google.generativeai.types import HarmCategory, HarmBlockThreshold
+import google.genai as genai
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -58,7 +57,7 @@ class GeminiLLMWrapper:
         self.model_id = model_id
         self.temperature = temperature
         self.max_tokens = max_tokens
-        self.api_key = api_key or os.getenv("GOOGLE_API_KEY")
+        self.api_key = os.getenv("GOOGLE_API_KEY")
         
         if not self.api_key:
             raise ValueError(
@@ -66,29 +65,13 @@ class GeminiLLMWrapper:
                 "or pass api_key parameter."
             )
         
-        # Configure Gemini
-        genai.configure(api_key=self.api_key)
-        
-        # Initialize the model
+        # Initialize the client
         try:
-            self.model = genai.GenerativeModel(
-                model_name=self.model_id,
-                generation_config=genai.types.GenerationConfig(
-                    temperature=self.temperature,
-                    max_output_tokens=self.max_tokens,
-                    top_p=0.8,
-                    top_k=40,
-                ),
-                safety_settings={
-                    HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-                    HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-                    HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-                    HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-                }
-            )
-            logger.info(f"Initialized Gemini model: {self.model_id}")
+            self.client = genai.Client(api_key=self.api_key)
+            # Store model_id for later use - no need to get model object upfront
+            logger.info(f"Initialized Gemini client with model: {self.model_id}")
         except Exception as e:
-            logger.error(f"Failed to initialize Gemini model: {e}")
+            logger.error(f"Failed to initialize Gemini client: {e}")
             raise
     
     def invoke(self, prompt: str, **kwargs) -> str:
@@ -107,8 +90,11 @@ class GeminiLLMWrapper:
         try:
             logger.debug(f"Invoking Gemini with prompt: {prompt[:100]}...")
             
-            # Generate response
-            response = self.model.generate_content(prompt)
+            # Generate response using the new API
+            response = self.client.models.generate_content(
+                model=self.model_id,
+                contents=prompt
+            )
             
             if response.text:
                 logger.debug(f"Gemini response: {response.text[:100]}...")
@@ -146,34 +132,23 @@ class GeminiLLMWrapper:
             Generated response as string
         """
         try:
-            # Convert messages to Gemini format
-            chat = self.model.start_chat(history=[])
-            
-            # Process messages
+            # Convert messages to simple text format for now
+            prompt = ""
             for message in messages:
                 role = message.get('role', 'user')
                 content = message.get('content', '')
-                
-                if role == 'user':
-                    response = chat.send_message(content)
-                elif role == 'assistant':
-                    # Add assistant message to history
-                    chat.history.append({
-                        'role': 'user',
-                        'parts': [content]
-                    })
-                    chat.history.append({
-                        'role': 'model',
-                        'parts': [content]
-                    })
+                prompt += f"{role}: {content}\n"
             
-            # Get the last response
-            if chat.history:
-                last_response = chat.history[-1]
-                if 'parts' in last_response:
-                    return last_response['parts'][0]
+            # Generate response using the new API
+            response = self.client.models.generate_content(
+                model=self.model_id,
+                contents=prompt
+            )
             
-            return ""
+            if response.text:
+                return response.text
+            else:
+                return ""
             
         except Exception as e:
             logger.error(f"Error in chat interface: {e}")
@@ -207,16 +182,7 @@ class GeminiLLMWrapper:
             self.max_tokens = kwargs['max_tokens']
         if 'model_id' in kwargs:
             self.model_id = kwargs['model_id']
-            # Reinitialize model with new ID
-            self.model = genai.GenerativeModel(
-                model_name=self.model_id,
-                generation_config=genai.types.GenerationConfig(
-                    temperature=self.temperature,
-                    max_output_tokens=self.max_tokens,
-                    top_p=0.8,
-                    top_k=40,
-                )
-            )
+            # Model ID updated, will be used in next API call
         
         logger.info(f"Updated Gemini configuration: {self.get_model_info()}")
 

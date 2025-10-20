@@ -28,7 +28,7 @@ nano .env  # Set your credentials and GOOGLE_API_KEY
 pip install -r requirements.txt
 
 # Start MCP server
-python mcp_server.py
+python server.py
 
 # Start FastAPI client (in another terminal)
 python mcp_client.py
@@ -40,7 +40,7 @@ Each template is completely self-contained:
 
 ```
 template-name/
-├── mcp_server.py          # Complete, ready-to-run MCP server
+├── server.py              # Complete, ready-to-run MCP server
 ├── mcp_client.py          # FastAPI client with /ask_llm endpoint
 ├── gemini_llm_wrapper.py  # Gemini LLM integration wrapper
 ├── requirements.txt       # All needed dependencies
@@ -101,7 +101,7 @@ cp env.template .env
 pip install -r requirements.txt
 
 # Start MCP server
-python mcp_server.py
+python server.py
 
 # Start FastAPI client (in another terminal)
 python mcp_client.py
@@ -152,7 +152,7 @@ cp env.template .env
 pip install -r requirements.txt
 
 # Start MCP server
-python mcp_server.py
+python server.py
 
 # Start FastAPI client (in another terminal)
 python mcp_client.py
@@ -200,7 +200,7 @@ cp env.template .env
 pip install -r requirements.txt
 
 # Start MCP server
-python mcp_server.py
+python server.py
 
 # Start FastAPI client (in another terminal)
 python mcp_client.py
@@ -248,7 +248,7 @@ cp env.template .env
 pip install -r requirements.txt
 
 # Start MCP server
-python mcp_server.py
+python server.py
 
 # Start FastAPI client (in another terminal)
 python mcp_client.py
@@ -352,7 +352,7 @@ Each template includes:
 
 - **README.md** - Complete setup and usage guide
 - **env.template** - Environment variables template
-- **mcp_server.py** - Complete MCP server implementation
+- **server.py** - Complete MCP server implementation
 - **mcp_client.py** - FastAPI client with `/ask_llm` endpoint
 - **gemini_llm_wrapper.py** - Gemini LLM integration wrapper
 - **test_template.py** - Test suite

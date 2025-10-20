@@ -21,6 +21,7 @@ This MCP server provides:
 - **FastAPI**: Web framework for the REST API client
 - **CacheTools**: In-memory caching for JIRA queries
 - **Python-dotenv**: Environment variable management
+- **Gemini LLM Wrapper**: Custom wrapper for Google Gemini models with NailLLMLangchain compatibility
 
 ## 🚀 Quick Start
 
@@ -50,7 +51,7 @@ pip install -r requirements.txt
 ### 4. Run Server
 
 ```bash
-python mcp_server.py
+python server.py
 ```
 
 ### 5. Run Client (Optional)
@@ -74,6 +75,10 @@ curl http://127.0.0.1:8001/health
 curl -X POST http://127.0.0.1:8001/ask_llm \
   -H "Content-Type: application/json" \
   -d '{"question": "Show me all open issues in the project"}'
+
+# Run comprehensive tests
+chmod +x test_curl_commands.sh
+./test_curl_commands.sh
 ```
 
 ## 🔧 Configuration
@@ -174,7 +179,30 @@ python test_jira.py
 
 # Test MCP client
 python mcp_client.py
+
+# Run comprehensive API tests
+chmod +x test_curl_commands.sh
+./test_curl_commands.sh
 ```
+
+### Test Scripts
+
+The template includes comprehensive test scripts:
+
+- **`test_curl_commands.sh`** - Complete test suite for all API endpoints
+- **`test_jira.py`** - Jira connection and basic functionality tests
+- **`mcp_client.py`** - MCP client integration tests
+
+The test script covers:
+- Jira structure and project queries
+- Issue search and filtering
+- Project analysis and statistics
+- Non-Jira query handling
+- Security (JQL injection, dangerous operations)
+- Edge cases (empty queries, large result sets)
+- Issue operations
+- Health checks
+- Direct API endpoints
 
 ### Example Queries
 
@@ -281,7 +309,7 @@ Enable debug logging:
 
 ```bash
 export LOG_LEVEL=DEBUG
-python mcp_server.py
+python server.py
 ```
 
 ### Health Check
@@ -366,7 +394,7 @@ For issues specific to JIRA MCP server:
 
 ### MCP Server Implementation
 
-The MCP server (`mcp_server.py`) implements:
+The MCP server (`server.py`) implements:
 
 1. **JIRA Connection Management**:
    - Support for JIRA Cloud and Server instances

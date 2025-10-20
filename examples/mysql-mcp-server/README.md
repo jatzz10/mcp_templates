@@ -30,7 +30,7 @@ pip install -r requirements.txt
 ### 4. Run Server
 
 ```bash
-python mcp_server.py
+python server.py
 ```
 
 ## 📊 Supported Databases
@@ -224,7 +224,7 @@ Enable debug logging:
 
 ```bash
 export LOG_LEVEL=DEBUG
-python mcp_server.py
+python server.py
 ```
 
 ### Health Check
